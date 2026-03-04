@@ -144,30 +144,55 @@ def setup_api() -> dict:
     print("""
 请选择您要使用的AI模型提供商:
 
-支持的模型:
-  • 通义千问 (阿里云) - 推荐，国内访问稳定
-  • 文心一言 (百度)
-  • 智谱AI (ChatGLM)
-  • DeepSeek
-  • 讯飞星火
-  • OpenAI (需要代理)
+【订阅制 Coding Plan - 推荐，最省钱】
+  💰 订阅制 = 固定月费，无限/大额调用，不用按token付费
+
+  • Qwen Coding Plan (阿里云) - 首月7.9元，9万次/月，支持Qwen3.5/GLM-5/MiniMax/Kimi
+  • GLM Coding Plan (智谱AI) - 高性价比，GLM-4.7/GLM-5模型
+  • MiniMax Coding Plan - 29元起/月，M2.5系列模型
+  • 豆包 Coding Plan (火山引擎) - 字节跳动，Doubao模型
+
+【按量付费 - 传统模式】
+  • 通义千问 (阿里云DashScope) - 按token计费
+  • DeepSeek - 按token计费，便宜
+  • 智谱AI (GLM) - 按token计费
+  • Kimi (月之暗面) - 按token计费
+  • OpenAI - 按token计费，需要代理
   • 其他兼容OpenAI接口的服务
 """)
 
+    # 提供商配置: (名称, base_url, 默认模型, 是否订阅制)
     providers = [
-        ("通义千问 (dashscope)", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
-        ("文心一言", "https://aip.baidubce.com/rpc/2.0/ai_custom/v1"),
-        ("智谱AI", "https://open.bigmodel.cn/api/paas/v4"),
-        ("DeepSeek", "https://api.deepseek.com/v1"),
-        ("讯飞星火", "https://spark-api-open.xf-yun.com/v1"),
-        ("OpenAI", "https://api.openai.com/v1"),
-        ("自定义", ""),
+        # 订阅制 Coding Plan
+        ("💰 Qwen Coding Plan (订阅制)", "https://coding.dashscope.aliyuncs.com/v1", "qwen3.5-plus", True),
+        ("💰 GLM Coding Plan (订阅制)", "https://open.bigmodel.cn/api/coding/paas/v4", "GLM-4.7", True),
+        ("💰 MiniMax Coding Plan (订阅制)", "https://api.minimaxi.com/v1", "MiniMax-M2.5", True),
+        ("💰 豆包 Coding Plan (订阅制)", "https://ark.cn-beijing.volces.com/api/v3", "doubao-pro-32k", True),
+        # 按量付费
+        ("通义千问 DashScope (按量)", "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen-plus", False),
+        ("DeepSeek (按量)", "https://api.deepseek.com/v1", "deepseek-chat", False),
+        ("智谱AI GLM (按量)", "https://open.bigmodel.cn/api/paas/v4", "glm-4", False),
+        ("Kimi 月之暗面 (按量)", "https://api.moonshot.cn/v1", "moonshot-v1-8k", False),
+        ("OpenAI (按量，需代理)", "https://api.openai.com/v1", "gpt-4o-mini", False),
+        ("自定义", "", "", False),
     ]
 
     options = [p[0] for p in providers]
     choice = select_option("请选择模型提供商:", options)
 
-    provider_name, default_base = providers[choice]
+    provider_name, default_base, default_model, is_subscription = providers[choice]
+
+    # 订阅制提示
+    if is_subscription:
+        print(f"\n{Color.GREEN}✓ 您选择了订阅制服务，固定月费，更省钱！{Color.END}")
+        subscription_links = {
+            0: "https://dashscope.console.aliyun.com/codingPlan",
+            1: "https://open.bigmodel.cn/chargemanage/chargemanage",
+            2: "https://platform.minimaxi.com/user-center/payment/coding-plan",
+            3: "https://console.volcengine.com/ark",
+        }
+        if choice in subscription_links:
+            print(f"  获取API Key: {subscription_links[choice]}")
 
     api_key = input_with_default("请输入API Key")
     while not api_key:
@@ -179,13 +204,25 @@ def setup_api() -> dict:
     else:
         api_base = input_with_default("API地址", default_base)
 
-    # 选择模型
+    # 根据提供商推荐模型
+    model_suggestions = {
+        0: ["qwen3.5-plus", "qwen3-max", "qwen3-coder-next", "glm-5", "minimax-m2.5", "kimi-k2.5"],  # Qwen Coding Plan
+        1: ["GLM-4.7", "GLM-5", "GLM-4-Plus"],  # GLM Coding Plan
+        2: ["MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1", "MiniMax-M2"],  # MiniMax Coding Plan
+        3: ["doubao-pro-32k", "doubao-lite-4k", "doubao-pro-128k"],  # 豆包 Coding Plan
+        4: ["qwen-plus", "qwen-turbo", "qwen-max"],  # 通义千问
+        5: ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],  # DeepSeek
+        6: ["glm-4", "glm-4-plus", "glm-4-flash"],  # 智谱AI
+        7: ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"],  # Kimi
+        8: ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"],  # OpenAI
+    }
+
     print("\n常用模型:")
-    models = ["qwen-plus", "qwen-turbo", "gpt-4", "gpt-3.5-turbo", "deepseek-chat", "glm-4"]
-    for i, m in enumerate(models, 1):
+    suggested_models = model_suggestions.get(choice, ["qwen-plus"])
+    for i, m in enumerate(suggested_models, 1):
         print(f"  {i}. {m}")
 
-    model = input_with_default("模型名称", models[0] if choice == 0 else models[-1])
+    model = input_with_default("模型名称", default_model or suggested_models[0])
 
     print_success("API配置完成")
 
