@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "copaw-edu"
+version = "2.0.0"
+description = "CoPaw-Edu 教育版 - 让AI助力每一个学习者"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "CoPaw-Edu Team"}
+]
+keywords = ["education", "ai", "learning", "student", "teacher", "parent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Education",
+]
+
+dependencies = [
+    "openai>=1.0.0",
+    "gradio>=4.0.0",
+    "tomli>=2.0.0;python_version<'3.11'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.scripts]
+copaw = "copaw.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/xxx/copaw-edu"
+Documentation = "https://github.com/xxx/copaw-edu#readme"
+Repository = "https://github.com/xxx/copaw-edu"
+Issues = "https://github.com/xxx/copaw-edu/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+copaw = ["agents/skills/**/SKILL.md"]
