@@ -165,9 +165,9 @@ def setup_api() -> dict:
     providers = [
         # 订阅制 Coding Plan
         ("💰 Qwen Coding Plan (订阅制)", "https://coding.dashscope.aliyuncs.com/v1", "qwen3.5-plus", True),
-        ("💰 GLM Coding Plan (订阅制)", "https://open.bigmodel.cn/api/coding/paas/v4", "GLM-4.7", True),
+        ("💰 GLM Coding Plan (订阅制)", "https://open.bigmodel.cn/api/coding/paas/v4", "GLM-5", True),
         ("💰 MiniMax Coding Plan (订阅制)", "https://api.minimaxi.com/v1", "MiniMax-M2.5", True),
-        ("💰 豆包 Coding Plan (订阅制)", "https://ark.cn-beijing.volces.com/api/v3", "doubao-pro-32k", True),
+        ("💰 豆包 Coding Plan (订阅制)", "https://ark.cn-beijing.volces.com/api/coding/v3", "ark-code-latest", True),
         # 按量付费
         ("通义千问 DashScope (按量)", "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen-plus", False),
         ("DeepSeek (按量)", "https://api.deepseek.com/v1", "deepseek-chat", False),
@@ -206,10 +206,10 @@ def setup_api() -> dict:
 
     # 根据提供商推荐模型
     model_suggestions = {
-        0: ["qwen3.5-plus", "qwen3-max", "qwen3-coder-next", "glm-5", "minimax-m2.5", "kimi-k2.5"],  # Qwen Coding Plan
-        1: ["GLM-4.7", "GLM-5", "GLM-4-Plus"],  # GLM Coding Plan
-        2: ["MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1", "MiniMax-M2"],  # MiniMax Coding Plan
-        3: ["doubao-pro-32k", "doubao-lite-4k", "doubao-pro-128k"],  # 豆包 Coding Plan
+        0: ["qwen3.5-plus", "qwen3-max", "qwen3-coder-next"],  # Qwen Coding Plan
+        1: ["GLM-5", "GLM-4.7", "GLM-4-Plus"],  # GLM Coding Plan
+        2: ["MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1"],  # MiniMax Coding Plan
+        3: ["ark-code-latest", "doubao-pro-32k", "doubao-lite-4k"],  # 豆包 Coding Plan
         4: ["qwen-plus", "qwen-turbo", "qwen-max"],  # 通义千问
         5: ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],  # DeepSeek
         6: ["glm-4", "glm-4-plus", "glm-4-flash"],  # 智谱AI
