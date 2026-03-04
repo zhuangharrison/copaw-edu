@@ -105,9 +105,9 @@ def show_welcome():
    _____            _____      _     _
   / ____|          / ____|    | |   | |
  | |     ___  _ __| |     __ _| | __| | ___ _ __
- | |    / _ \| '__| |    / _` | |/ _` |/ _ \ '__|
+ | |    / _ \\| '__| |    / _` | |/ _` |/ _ \\ '__|
  | |___| (_) | |  | |___| (_| | | (_| |  __/ |
-  \_____\___/|_|   \_____\__,_|_|\__,_|\___|_|
+  \\_____\\___/|_|   \\_____\\__,_|_|\\__,_|\\___|_|
 {Color.END}
 
 {Color.GREEN}      教育版 - 让AI助力每一个学习者{Color.END}
@@ -147,10 +147,10 @@ def setup_api() -> dict:
 【订阅制 Coding Plan - 推荐，最省钱】
   💰 订阅制 = 固定月费，无限/大额调用，不用按token付费
 
-  • Qwen Coding Plan (阿里云) - 首月7.9元，9万次/月，支持Qwen3.5/GLM-5/MiniMax/Kimi
-  • GLM Coding Plan (智谱AI) - 高性价比，GLM-4.7/GLM-5模型
+  • Qwen Coding Plan (阿里云) - 首月7.9元，9万次/月，支持多模型
+  • GLM Coding Plan (智谱AI) - 高性价比，GLM-5模型
   • MiniMax Coding Plan - 29元起/月，M2.5系列模型
-  • 豆包 Coding Plan (火山引擎) - 字节跳动，Doubao模型
+  • 豆包 Coding Plan (火山引擎) - 字节跳动，ark-code-latest模型
 
 【按量付费 - 传统模式】
   • 通义千问 (阿里云DashScope) - 按token计费
@@ -419,15 +419,15 @@ def show_complete():
 {Color.GREEN}🎉 恭喜！CoPaw-Edu 已配置完成！{Color.END}
 
 启动方式:
-  {Color.CYAN}copaw app{Color.END}          启动Web界面
-  {Color.CYAN}copaw app --port 8080{Color.END}  指定端口启动
+  {Color.CYAN}python -m copaw app{Color.END}          启动Web界面
+  {Color.CYAN}python run.py{Color.END}              快速启动
 
 访问地址:
-  {Color.CYAN}http://127.0.0.1:8088{Color.END}
+  {Color.CYAN}http://127.0.0.1:7860{Color.END}
 
 其他命令:
-  {Color.CYAN}copaw --help{Color.END}       查看帮助
-  {Color.CYAN}copaw config{Color.END}       修改配置
+  {Color.CYAN}python -m copaw --help{Color.END}       查看帮助
+  {Color.CYAN}python -m copaw test{Color.END}        测试配置
 
 {Color.YELLOW}提示: 首次使用请确保API配置正确{Color.END}
 """)
