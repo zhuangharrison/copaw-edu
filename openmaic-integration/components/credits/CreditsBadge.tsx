@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface CreditsBadgeProps {
   credits: number;
 }
@@ -8,8 +10,9 @@ export function CreditsBadge({ credits }: CreditsBadgeProps) {
   const isLow = credits < 50;
 
   return (
-    <div
-      className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+    <Link
+      href="/pricing"
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-opacity hover:opacity-80 ${
         isLow
           ? 'bg-destructive/10 text-destructive'
           : 'bg-primary/10 text-primary'
@@ -21,7 +24,7 @@ export function CreditsBadge({ credits }: CreditsBadgeProps) {
         <path d="M12 18V6" />
       </svg>
       <span>{credits}</span>
-      {isLow && <span className="text-[10px] opacity-70">积分不足</span>}
-    </div>
+      {isLow && <span className="text-[10px] opacity-70">充值</span>}
+    </Link>
   );
 }

@@ -20,9 +20,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  subscription  Subscription?
-  creditHistory CreditHistory[]
-  sessions      Session[]
+  subscription    Subscription?
+  creditHistory   CreditHistory[]
+  sessions        Session[]
+  mistakes        MistakeRecord[]
+  memories        MemoryRecord[]
+  learningProgress LearningProgress[]
 }
 
 model Session {
@@ -76,6 +79,57 @@ model AdminDefaultConfig {
   id    String @id @default(cuid())
   key   String @unique // default_llm_provider, default_llm_model, default_tts_provider, etc.
   value String
+}
+
+// ==================== CoPaw 学习数据 ====================
+
+model MistakeRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String   // 学科
+  category    String   // 知识缺漏/概念混淆/计算错误/审题错误/方法错误/粗心大意
+  question    String   // 原题
+  wrongAnswer String?  // 错误答案
+  analysis    String   // AI分析
+  correction  String   // 正确解法
+  variants    String?  // JSON: 举一反三题目
+  reviewCount Int      @default(0)
+  lastReviewAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, subject])
+  @@index([userId, createdAt])
+}
+
+model MemoryRecord {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject       String   // 学科
+  content       String   // 记忆内容
+  method        String   // 记忆宫殿/口诀歌诀/图像联想/故事串联/导演记忆法
+  mnemonicData  String?  // JSON: 记忆辅助数据
+  strength      Int      @default(1) // 1-5 记忆强度
+  reviewCount   Int      @default(0)
+  nextReviewAt  DateTime // 下次复习时间（艾宾浩斯）
+  lastReviewAt  DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([userId, nextReviewAt])
+  @@index([userId, subject])
+}
+
+model LearningProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId   String   // CoPaw skill ID
+  data      String   // JSON: 技能特定的进度数据
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([userId, skillId])
 }
 
 // ==================== 积分系统 ====================
