@@ -1,0 +1,117 @@
+diff --git a/lib/server/provider-config.ts b/lib/server/provider-config.ts
+index b1e0dd4..6bb0eb6 100644
+--- a/lib/server/provider-config.ts
++++ b/lib/server/provider-config.ts
+@@ -9,6 +9,7 @@ import fs from 'fs';
+ import path from 'path';
+ import yaml from 'js-yaml';
+ import { createLogger } from '@/lib/logger';
++import { resolveDBApiKey, resolveDBBaseUrl } from '@/lib/server/admin/db-provider-loader';
+ 
+ const log = createLogger('ServerProviderConfig');
+ 
+@@ -232,14 +233,18 @@ export function getServerProviders(): Record<string, { models?: string[]; baseUr
+   return result;
+ }
+ 
+-/** Resolve API key: client key > server key > empty string */
++/** Resolve API key: DB admin > client key > YAML/ENV > empty string */
+ export function resolveApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('providers', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().providers[providerId]?.apiKey || '';
+ }
+ 
+-/** Resolve base URL: client > server > undefined */
++/** Resolve base URL: DB admin > client > YAML/ENV > undefined */
+ export function resolveBaseUrl(providerId: string, clientBaseUrl?: string): string | undefined {
++  const dbUrl = resolveDBBaseUrl('providers', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().providers[providerId]?.baseUrl;
+ }
+@@ -264,11 +269,15 @@ export function getServerTTSProviders(): Record<string, { baseUrl?: string }> {
+ }
+ 
+ export function resolveTTSApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('tts', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().tts[providerId]?.apiKey || '';
+ }
+ 
+ export function resolveTTSBaseUrl(providerId: string, clientBaseUrl?: string): string | undefined {
++  const dbUrl = resolveDBBaseUrl('tts', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().tts[providerId]?.baseUrl;
+ }
+@@ -288,11 +297,15 @@ export function getServerASRProviders(): Record<string, { baseUrl?: string }> {
+ }
+ 
+ export function resolveASRApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('asr', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().asr[providerId]?.apiKey || '';
+ }
+ 
+ export function resolveASRBaseUrl(providerId: string, clientBaseUrl?: string): string | undefined {
++  const dbUrl = resolveDBBaseUrl('asr', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().asr[providerId]?.baseUrl;
+ }
+@@ -312,11 +325,15 @@ export function getServerPDFProviders(): Record<string, { baseUrl?: string }> {
+ }
+ 
+ export function resolvePDFApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('pdf', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().pdf[providerId]?.apiKey || '';
+ }
+ 
+ export function resolvePDFBaseUrl(providerId: string, clientBaseUrl?: string): string | undefined {
++  const dbUrl = resolveDBBaseUrl('pdf', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().pdf[providerId]?.baseUrl;
+ }
+@@ -335,6 +352,8 @@ export function getServerImageProviders(): Record<string, Record<string, never>>
+ }
+ 
+ export function resolveImageApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('image', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().image[providerId]?.apiKey || '';
+ }
+@@ -343,6 +362,8 @@ export function resolveImageBaseUrl(
+   providerId: string,
+   clientBaseUrl?: string,
+ ): string | undefined {
++  const dbUrl = resolveDBBaseUrl('image', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().image[providerId]?.baseUrl;
+ }
+@@ -361,6 +382,8 @@ export function getServerVideoProviders(): Record<string, Record<string, never>>
+ }
+ 
+ export function resolveVideoApiKey(providerId: string, clientKey?: string): string {
++  const dbKey = resolveDBApiKey('video', providerId);
++  if (dbKey) return dbKey;
+   if (clientKey) return clientKey;
+   return getConfig().video[providerId]?.apiKey || '';
+ }
+@@ -369,6 +392,8 @@ export function resolveVideoBaseUrl(
+   providerId: string,
+   clientBaseUrl?: string,
+ ): string | undefined {
++  const dbUrl = resolveDBBaseUrl('video', providerId);
++  if (dbUrl) return dbUrl;
+   if (clientBaseUrl) return clientBaseUrl;
+   return getConfig().video[providerId]?.baseUrl;
+ }

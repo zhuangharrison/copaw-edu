@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/lib/store/auth';
+import { useRouter } from 'next/navigation';
 import { AuthDialog } from './AuthDialog';
 import { CreditsBadge } from '../credits/CreditsBadge';
 
 export function UserMenu() {
   const { user, logout } = useAuthStore();
+  const router = useRouter();
   const [showAuth, setShowAuth] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -54,6 +56,14 @@ export function UserMenu() {
                   }</span>
                 </p>
               </div>
+              {user.role === 'ADMIN' && (
+                <button
+                  onClick={() => { router.push('/admin'); setShowMenu(false); }}
+                  className="hover:bg-muted mt-1 w-full rounded-md px-3 py-1.5 text-left text-sm"
+                >
+                  管理后台
+                </button>
+              )}
               <button
                 onClick={() => { logout(); setShowMenu(false); }}
                 className="text-destructive hover:bg-muted mt-1 w-full rounded-md px-3 py-1.5 text-left text-sm"
