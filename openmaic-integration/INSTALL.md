@@ -56,7 +56,7 @@ cp -r openmaic-integration/prisma/* prisma/
 cp openmaic-integration/prisma.config.ts prisma.config.ts
 
 # 安装新增依赖
-npm install @prisma/client bcryptjs zustand
+npm install @prisma/client bcryptjs zustand pptxgenjs
 npm install -D prisma @types/bcryptjs
 
 # 初始化数据库
@@ -78,6 +78,16 @@ git apply openmaic-integration/openmaic-changes-phase2.patch
 DATABASE_URL="file:./prisma/dev.db"
 ENCRYPTION_KEY="your-32-byte-hex-key"   # 用于 API Key 加密
 PAYMENT_MODE="development"               # development | production
+
+# LLM 配置（也可在管理后台配置）
+LLM_API_BASE="https://api.openai.com/v1"
+LLM_API_KEY="sk-..."
+LLM_MODEL="gpt-4o"
+
+# TTS 语音合成（可选）
+TTS_API_BASE="https://api.openai.com/v1"
+TTS_API_KEY="sk-..."
+TTS_MODEL="tts-1"
 ```
 
 ## 模块结构
@@ -95,6 +105,8 @@ openmaic-integration/
 │       ├── payment/        # 支付 API
 │       ├── skills/         # 技能 API
 │       ├── learning/       # 学习数据 API
+│       ├── classroom/      # 课堂生成 API（SSE 流式）
+│       ├── copaw/          # CoPaw 教学 API（聊天/TTS/多模态）
 │       └── admin/          # 管理 API
 ├── components/             # React 组件
 │   ├── auth/               # 认证组件
@@ -107,6 +119,13 @@ openmaic-integration/
 │   ├── middleware/          # 积分扣费中间件
 │   ├── server/             # 后端服务
 │   ├── skills/copaw/       # 15个 CoPaw 技能定义
+│   ├── classroom/          # OpenMAIC 课堂核心
+│   │   ├── types.ts        # 课堂/场景/白板类型
+│   │   ├── scene-generator.ts  # 一键生成引擎
+│   │   ├── director-graph.ts   # 多智能体编排器
+│   │   ├── voice.ts        # 语音系统 (TTS/ASR)
+│   │   ├── whiteboard.ts   # Canvas 白板渲染
+│   │   └── export-pptx.ts  # 导出 (PPTX/PDF/MD)
 │   └── store/              # Zustand 状态管理
 ├── prisma/                 # 数据库 Schema 和迁移
 └── scripts/                # 工具脚本
@@ -139,6 +158,22 @@ openmaic-integration/
 - [x] 升级引导
 - [x] 支付对话框（预留微信/支付宝/Stripe 接口）
 - [x] 积分扣费中间件
+- [x] CoPaw 教学引擎（角色系统 + 技能检测 + LLM 流式对话）
+- [x] CoPaw 教学 UI（聊天 + 角色切换 + 技能面板 + 使用示例）
+- [x] CoPaw 个人档案设置向导
+- [x] OpenMAIC 一键生成课堂（LLM 驱动、SSE 进度）
+- [x] 4种场景类型（讲授/讨论/测验/活动）
+- [x] 多智能体编排（Director Graph 模式、6种角色）
+- [x] Canvas 白板系统（文本/形状/线条/LaTeX/自由绘制）
+- [x] 白板时间轴同步（配合场景播放逐步展示）
+- [x] 用户白板标注交互
+- [x] TTS 语音合成（API + 浏览器回退）
+- [x] ASR 语音识别（Web Speech API）
+- [x] 课堂导出 PPTX（pptxgenjs）
+- [x] 课堂导出 PDF（打印方式）
+- [x] 课堂导出 Markdown
+- [x] 课堂播放器 UI（场景导航/播放控制/实时提问）
+- [x] 用户课堂互动（播放中提问、教师回答）
 
 ### 待生产环境对接
 
