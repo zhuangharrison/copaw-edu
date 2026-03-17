@@ -1,45 +1,46 @@
-# OpenMAIC Integration - Phase 1: 基础设施
+# CoPaw-Edu × OpenMAIC 整合模块
 
-本目录包含对 OpenMAIC 项目的改造代码，实现用户认证 + 积分系统。
+完整的教育平台整合方案，包含 15 个 CoPaw 学习技能、积分订阅系统、后端模型管理。
 
-## 包含的文件
+## 快速开始
 
-### 新增文件（直接复制到 OpenMAIC 对应目录）
-- `prisma/schema.prisma` - 数据库 Schema（User, Session, Subscription, CreditHistory）
-- `prisma.config.ts` - Prisma 配置
-- `prisma/migrations/` - 数据库迁移文件
-- `lib/server/db.ts` - Prisma 客户端实例（使用 LibSQL 适配器）
-- `lib/server/auth/index.ts` - 认证服务（注册/登录/会话管理）
-- `lib/server/credits/index.ts` - 积分系统核心（10种操作类型、扣减/充值/流水）
-- `lib/store/auth.ts` - 前端 Zustand 用户状态管理
-- `app/api/auth/register/route.ts` - 注册 API
-- `app/api/auth/login/route.ts` - 登录 API
-- `app/api/auth/session/route.ts` - 会话查询 API
-- `app/api/auth/logout/route.ts` - 登出 API
-- `app/api/credits/route.ts` - 积分余额查询 + 积分检查 API
-- `app/api/credits/history/route.ts` - 积分流水 API
-- `components/auth/AuthDialog.tsx` - 登录/注册弹窗
-- `components/auth/AuthProvider.tsx` - 认证初始化 Provider
-- `components/auth/UserMenu.tsx` - 用户菜单（头像+积分+登出）
-- `components/credits/CreditsBadge.tsx` - 积分余额显示组件
-
-### 修改的文件（见 openmaic-changes.patch）
-- `app/layout.tsx` - 添加 AuthProvider
-- `app/page.tsx` - 添加 UserMenu 到首页导航栏
-- `components/header.tsx` - 添加 UserMenu 到课堂页导航栏
-
-### 新增依赖
 ```bash
-pnpm add prisma @prisma/client @prisma/adapter-libsql @libsql/client next-auth@beta bcryptjs
+cd openmaic-integration
+npm install
+npm run setup      # 初始化数据库
+npm run db:seed    # 填充测试数据
+npm test           # 运行集成测试
 ```
 
-## 应用步骤
+详细安装说明请参阅 [INSTALL.md](./INSTALL.md)。
 
-1. 复制所有新增文件到 OpenMAIC 对应目录
-2. 应用 patch: `cd OpenMAIC && git apply ../copaw-edu/openmaic-integration/openmaic-changes.patch`
-3. 安装依赖: `pnpm install`
-4. 生成 Prisma 客户端: `npx prisma generate`
-5. 运行迁移: `DATABASE_URL="file:./dev.db" npx prisma migrate dev`
+## 模块概览
+
+### Phase 1: 用户认证 + 积分系统
+- 邮箱密码注册/登录
+- 新用户 200 积分赠送
+- 10 种操作积分消耗
+- 积分流水记录
+
+### Phase 2: 后端模型配置
+- 提供商 CRUD 管理（支持 10+ 提供商）
+- API Key AES-256 加密存储
+- 模型启用/禁用管理
+- 连接测试
+- 默认配置管理
+
+### Phase 3: CoPaw 学习技能
+- **学生技能 (6)**：记忆系统、知识理解、错题管理、考前冲刺、多模态生成、AI提示库
+- **家长技能 (4)**：进度报告、学情简报、资源推荐、时间管理
+- **教师技能 (5)**：教案生成、试卷生成、学情分析、批改辅助、家校沟通
+- 学习数据持久化（错题本、记忆库、进度追踪）
+
+### Phase 4: 订阅与支付
+- 3 档订阅（学生¥29/教师¥59/专业¥99 每月）
+- 月付/年付（年付8折 + 额外积分）
+- 积分包购买（100/500/2000）
+- 支付接口预留（微信/支付宝/Stripe）
+- 订阅管理（激活/取消/续费）
 
 ## 积分消耗规则
 
@@ -56,4 +57,41 @@ pnpm add prisma @prisma/client @prisma/adapter-libsql @libsql/client next-auth@b
 | CoPaw技能（每次） | 5 |
 | 导出PPTX | 5 |
 
-新用户注册自动赠送 **200 积分**。
+## 测试账户
+
+| 角色 | 邮箱 | 密码 |
+|------|------|------|
+| 管理员 | admin@copaw.edu | admin123 |
+| 学生 | student@test.com | test123 |
+| 教师 | teacher@test.com | test123 |
+
+## API 端点
+
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/api/auth/register` | POST | 注册 |
+| `/api/auth/login` | POST | 登录 |
+| `/api/auth/logout` | POST | 登出 |
+| `/api/auth/session` | GET | 当前会话 |
+| `/api/credits` | GET | 积分余额 |
+| `/api/credits/history` | GET | 积分流水 |
+| `/api/subscription` | GET/POST | 订阅管理 |
+| `/api/subscription/plans` | GET | 订阅方案 |
+| `/api/subscription/cancel` | POST | 取消订阅 |
+| `/api/payment/create` | POST | 创建支付 |
+| `/api/payment/webhook` | POST | 支付回调 |
+| `/api/skills` | GET | 技能列表 |
+| `/api/learning/mistakes` | GET/POST | 错题管理 |
+| `/api/learning/memories` | GET/POST | 记忆管理 |
+| `/api/learning/progress` | GET/POST | 学习进度 |
+| `/api/admin/providers` | GET/POST | 提供商管理 |
+| `/api/admin/defaults` | GET/PUT | 默认配置 |
+| `/api/admin/test-connection` | POST | 连接测试 |
+
+## 页面路由
+
+| 路径 | 说明 |
+|------|------|
+| `/pricing` | 订阅方案定价页 |
+| `/account` | 用户账户管理 |
+| `/admin` | 管理后台 |

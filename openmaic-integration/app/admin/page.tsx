@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store/auth';
 import { ProviderList } from '@/components/admin/ProviderList';
+import { ModelManager } from '@/components/admin/ModelManager';
 import { ArrowLeft, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminPage() {
   const { user, loading, fetchSession } = useAuthStore();
   const router = useRouter();
-  const [tab, setTab] = useState<'providers' | 'defaults'>('providers');
+  const [tab, setTab] = useState<'providers' | 'models' | 'defaults'>('providers');
 
   useEffect(() => {
     fetchSession();
@@ -74,6 +75,16 @@ export default function AdminPage() {
             提供商配置
           </button>
           <button
+            onClick={() => setTab('models')}
+            className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors ${
+              tab === 'models'
+                ? 'border-primary text-primary'
+                : 'text-muted-foreground border-transparent hover:border-gray-300'
+            }`}
+          >
+            模型管理
+          </button>
+          <button
             onClick={() => setTab('defaults')}
             className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors ${
               tab === 'defaults'
@@ -86,6 +97,7 @@ export default function AdminPage() {
         </div>
 
         {tab === 'providers' && <ProviderList />}
+        {tab === 'models' && <ModelManager />}
         {tab === 'defaults' && <DefaultsPanel />}
       </main>
     </div>
