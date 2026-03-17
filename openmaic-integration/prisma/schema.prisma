@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ==================== 用户系统 ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("FREE") // FREE, STUDENT, TEACHER, PRO, ADMIN
+  credits       Int       @default(200)    // 新用户赠送200积分
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  subscription  Subscription?
+  creditHistory CreditHistory[]
+  sessions      Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ==================== 订阅系统 ====================
+
+model Subscription {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           String   // STUDENT, TEACHER, PRO
+  period         String   // MONTHLY, YEARLY
+  status         String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  monthlyCredits Int
+  bonusCredits   Int      @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ==================== 积分系统 ====================
+
+model CreditHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int      // 正数=充值/赠送，负数=消耗
+  balance     Int      // 操作后余额
+  type        String   // INITIAL_GRANT, SUBSCRIPTION, BONUS, PURCHASE, CONSUMPTION, REFUND
+  description String
+  metadata    String?  // JSON 额外信息
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
