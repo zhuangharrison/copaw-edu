@@ -1,0 +1,37 @@
+{
+  "name": "copaw-edu-openmaic-integration",
+  "version": "1.0.0",
+  "description": "CoPaw-Edu × OpenMAIC 整合模块 - 15个学习技能、积分订阅系统、后端模型管理",
+  "private": true,
+  "scripts": {
+    "postinstall": "prisma generate",
+    "setup": "npx prisma generate && npx prisma db push",
+    "db:migrate": "npx prisma migrate dev",
+    "db:push": "npx prisma db push",
+    "db:studio": "npx prisma studio",
+    "db:seed": "npx tsx scripts/seed.ts",
+    "test": "npx tsx scripts/test-integration.ts",
+    "check": "npx tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcryptjs": "^2.4.3",
+    "pptxgenjs": "^3.12.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "prisma": "^6.5.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "next": ">=14.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "lucide-react": ">=0.300.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

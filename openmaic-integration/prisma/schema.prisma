@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ==================== 用户系统 ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("FREE") // FREE, STUDENT, TEACHER, PRO, ADMIN
+  credits       Int       @default(200)    // 新用户赠送200积分
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  subscription    Subscription?
+  creditHistory   CreditHistory[]
+  sessions        Session[]
+  mistakes        MistakeRecord[]
+  memories        MemoryRecord[]
+  learningProgress LearningProgress[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ==================== 订阅系统 ====================
+
+model Subscription {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           String   // STUDENT, TEACHER, PRO
+  period         String   // MONTHLY, YEARLY
+  status         String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  monthlyCredits Int
+  bonusCredits   Int      @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ==================== 后端提供商配置 ====================
+
+model AdminProviderConfig {
+  id          String   @id @default(cuid())
+  providerId  String   // openai, anthropic, google, deepseek, etc.
+  category    String   @default("llm") // llm, tts, asr, image, video, pdf, web-search
+  apiKey      String   // AES-256加密存储
+  baseUrl     String?
+  proxy       String?
+  models      String?  // JSON: 启用的模型ID列表
+  isEnabled   Boolean  @default(true)
+  priority    Int      @default(0) // 排序优先级
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([providerId, category])
+  @@index([category, isEnabled])
+}
+
+model AdminDefaultConfig {
+  id    String @id @default(cuid())
+  key   String @unique // default_llm_provider, default_llm_model, default_tts_provider, etc.
+  value String
+}
+
+// ==================== CoPaw 学习数据 ====================
+
+model MistakeRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String   // 学科
+  category    String   // 知识缺漏/概念混淆/计算错误/审题错误/方法错误/粗心大意
+  question    String   // 原题
+  wrongAnswer String?  // 错误答案
+  analysis    String   // AI分析
+  correction  String   // 正确解法
+  variants    String?  // JSON: 举一反三题目
+  reviewCount Int      @default(0)
+  lastReviewAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, subject])
+  @@index([userId, createdAt])
+}
+
+model MemoryRecord {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject       String   // 学科
+  content       String   // 记忆内容
+  method        String   // 记忆宫殿/口诀歌诀/图像联想/故事串联/导演记忆法
+  mnemonicData  String?  // JSON: 记忆辅助数据
+  strength      Int      @default(1) // 1-5 记忆强度
+  reviewCount   Int      @default(0)
+  nextReviewAt  DateTime // 下次复习时间（艾宾浩斯）
+  lastReviewAt  DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([userId, nextReviewAt])
+  @@index([userId, subject])
+}
+
+model LearningProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId   String   // CoPaw skill ID
+  data      String   // JSON: 技能特定的进度数据
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([userId, skillId])
+}
+
+// ==================== 积分系统 ====================
+
+model CreditHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int      // 正数=充值/赠送，负数=消耗
+  balance     Int      // 操作后余额
+  type        String   // INITIAL_GRANT, SUBSCRIPTION, BONUS, PURCHASE, CONSUMPTION, REFUND
+  description String
+  metadata    String?  // JSON 额外信息
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

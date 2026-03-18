@@ -1,0 +1,73 @@
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 271af55..c857709 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/lib/hooks/use-theme';
+ import { I18nProvider } from '@/lib/hooks/use-i18n';
+ import { Toaster } from '@/components/ui/sonner';
+ import { ServerProvidersInit } from '@/components/server-providers-init';
++import { AuthProvider } from '@/components/auth/AuthProvider';
+ 
+ const inter = localFont({
+   src: '../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',
+@@ -35,9 +36,11 @@ export default function RootLayout({
+       >
+         <ThemeProvider>
+           <I18nProvider>
+-            <ServerProvidersInit />
+-            {children}
+-            <Toaster position="top-center" />
++            <AuthProvider>
++              <ServerProvidersInit />
++              {children}
++              <Toaster position="top-center" />
++            </AuthProvider>
+           </I18nProvider>
+         </ThemeProvider>
+       </body>
+diff --git a/app/page.tsx b/app/page.tsx
+index 80dfbd8..c436c6f 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -46,6 +46,7 @@ import { toast } from 'sonner';
+ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+ import { useDraftCache } from '@/lib/hooks/use-draft-cache';
+ import { SpeechButton } from '@/components/audio/speech-button';
++import { UserMenu } from '@/components/auth/UserMenu';
+ 
+ const log = createLogger('Home');
+ 
+@@ -460,6 +461,11 @@ function HomePage() {
+             </>
+           )}
+         </div>
++
++        <div className="w-[1px] h-4 bg-gray-200 dark:bg-gray-700" />
++
++        {/* User Menu */}
++        <UserMenu />
+       </div>
+       <SettingsDialog
+         open={settingsOpen}
+diff --git a/components/header.tsx b/components/header.tsx
+index 77a63b0..35d14ed 100644
+--- a/components/header.tsx
++++ b/components/header.tsx
+@@ -21,6 +21,7 @@ import { useSettingsStore } from '@/lib/store/settings';
+ import { useStageStore } from '@/lib/store/stage';
+ import { useMediaGenerationStore } from '@/lib/store/media-generation';
+ import { useExportPPTX } from '@/lib/export/use-export-pptx';
++import { UserMenu } from '@/components/auth/UserMenu';
+ 
+ interface HeaderProps {
+   readonly currentSceneTitle: string;
+@@ -237,6 +238,9 @@ export function Header({ currentSceneTitle }: HeaderProps) {
+           </div>
+         </div>
+ 
++        {/* User Menu */}
++        <UserMenu />
++
+         {/* Export Dropdown */}
+         <div className="relative" ref={exportRef}>
+           <button
