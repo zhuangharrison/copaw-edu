@@ -57,7 +57,8 @@ echo     "react-dom": "^18.3.0",
 echo     "@prisma/client": "^6.5.0",
 echo     "bcryptjs": "^2.4.3",
 echo     "zustand": "^5.0.0",
-echo     "pptxgenjs": "^3.12.0"
+echo     "pptxgenjs": "^3.12.0",
+echo     "lucide-react": "^0.460.0"
 echo   },
 echo   "devDependencies": {
 echo     "@types/node": "^22.0.0",

@@ -58,7 +58,8 @@ else
     "@prisma/client": "^6.5.0",
     "bcryptjs": "^2.4.3",
     "zustand": "^5.0.0",
-    "pptxgenjs": "^3.12.0"
+    "pptxgenjs": "^3.12.0",
+    "lucide-react": "^0.460.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
