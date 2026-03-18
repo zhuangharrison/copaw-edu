@@ -4,6 +4,7 @@
   "description": "CoPaw-Edu × OpenMAIC 整合模块 - 15个学习技能、积分订阅系统、后端模型管理",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "setup": "npx prisma generate && npx prisma db push",
     "db:migrate": "npx prisma migrate dev",
     "db:push": "npx prisma db push",
